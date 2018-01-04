@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+                        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+                        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<!-- Bean for Spring being aware of the @PostConstruct and @PreDestroy annotation   -->
+	<bean class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor" />
+	
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basename" value="classpath:messages" />  
+    </bean>
+    
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="properties" ref="appProperties" />
+		<property name="ignoreUnresolvablePlaceholders" value="true"/>
+	</bean>
+ 
+ 
+    <bean id="appProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="locations">
+			<list>
+				<value>classpath:app.properties</value>
+				<value>classpath:mail.properties</value>
+			</list>
+		</property>
+		<property name="ignoreResourceNotFound" value="true"/>
+		<property name="singleton" value="true" />
+    </bean>
+	
+    <context:component-scan base-package="com.comcast.x1" />
+
+	<cache:annotation-driven />
+    
+    <bean id="ehCache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+       	<property name="shared" value="true" />
+       	<property name="configLocation" value="classpath:ehcache.xml" />
+    </bean>
+
+    <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" >
+       	<property name="cacheManager" ref="ehCache" />
+    </bean>    
+    
+    
+    <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
+        <property name="assembler" ref="assembler"/>
+        <property name="namingStrategy" ref="namingStrategy"/>
+        <property name="autodetect" value="true"/>
+        <property name="registrationPolicy" value="REPLACE_EXISTING"></property>
+        <property name="beans">
+        	<map>
+        		<entry key="RootRole" value-ref="&amp;role_Root"/>
+        	</map>
+        </property>
+    </bean>
+
+    <bean id="jmxAttributeSource"
+          class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource"/>
+
+    <!-- will create management interface using annotation metadata -->
+    <bean id="assembler"
+          class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
+        <property name="attributeSource" ref="jmxAttributeSource"/>
+    </bean>
+
+    <!-- will pick up the ObjectName from the annotation -->
+    <bean id="namingStrategy"
+         class="org.springframework.jmx.export.naming.MetadataNamingStrategy">
+       <property name="attributeSource" ref="jmxAttributeSource"/>
+       <property name="defaultDomain" value="com.comcast.x1.streamFlightPlanner" />
+   </bean> 
+    
+</beans>
