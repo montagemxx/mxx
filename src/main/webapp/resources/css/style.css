@@ -1,0 +1,8 @@
+.clearFloat {
+    clear: both;
+}
+
+.app-heading {
+    padding: 0px !important;
+    font-size: 1.2em;
+}
