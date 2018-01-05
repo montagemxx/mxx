@@ -1,13 +1,12 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <head>
-<title>Spring MVC Form Handling Example</title>
+	<title>Spring MVC Form Handling Example</title>
 
-<spring:url value="/resources/core/css/hello.css" var="coreCss" />
-<spring:url value="/resources/core/css/bootstrap.min.css"
-	var="bootstrapCss" />
-<link href="${bootstrapCss}" rel="stylesheet" />
-<link href="${coreCss}" rel="stylesheet" />
+	<spring:url value="/resources/core/css/style.css" var="styleCss" />
+	<spring:url value="/resources/core/css/bootstrap.min.css" var="bootstrapCss" />
+	<link href="${bootstrapCss}" rel="stylesheet" />
+	<link href="${styleCss}" rel="stylesheet" />
 </head>
 
 <spring:url value="/" var="urlHome" />
